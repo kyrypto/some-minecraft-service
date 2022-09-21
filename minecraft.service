@@ -1,0 +1,42 @@
+[Unit]
+Description=Minecraft Server
+After=network.target
+
+[Service]
+# Set WorkingDirectory and ExecStart to your file paths accordingly
+# NOTE: %h will be resolved to /home/<username>
+WorkingDirectory=%h/Minecraft
+
+# Solves the issue where the minecraft server will endlessly restart itself
+# See https://askubuntu.com/questions/953920/systemctl-service-timed-out-during-start for more info
+Type=simple
+User=steve
+Group=steve
+# Set default memory values
+Environment="MCMINMEM=512M" "MCMAXMEM=1024M" "SHUTDOWN_DELAY=5" "POST_SHUTDOWN_DELAY=10"
+
+ExecStart=/bin/sh -c \
+    'find -L . \
+      -maxdepth 1 \
+      -type f \
+      -iregex ".*/\\(FTBServer\\|craftbukkit\\|spigot\\|paper\\|forge\\|minecraft_server\\).*jar" \
+      -print0 \
+      -quit \
+    | xargs -0 -I{} \
+      /usr/bin/screen -DmS mc-%i \
+        /usr/bin/java \
+          -server \
+          -Xms${MCMINMEM} \
+          -Xmx${MCMAXMEM} \
+          -XX:+UseG1GC \
+          -XX:ParallelGCThreads=2 \
+          -XX:MinHeapFreeRatio=5 \
+          -XX:MaxHeapFreeRatio=10 \
+          -jar {} \
+          --nogui'
+Restart=on-failure
+RestartSec=60s
+
+
+[Install]
+WantedBy=default.target
