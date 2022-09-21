@@ -11,7 +11,6 @@ WorkingDirectory=%h/Minecraft
 # See https://askubuntu.com/questions/953920/systemctl-service-timed-out-during-start for more info
 Type=simple
 User=steve
-Group=steve
 # Set default memory values
 Environment="MCMINMEM=512M" "MCMAXMEM=1024M" "SHUTDOWN_DELAY=5" "POST_SHUTDOWN_DELAY=10"
 
